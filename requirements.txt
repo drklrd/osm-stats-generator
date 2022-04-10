@@ -1,0 +1,3 @@
+osmdiff==0.2.1
+osmium==3.3.0
+
