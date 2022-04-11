@@ -39,4 +39,4 @@ Example: python OSMStatsGenerator.py 'User Name'
 
 # Limitations
 
-- Considers only creation changes for now
+- Considers only creation and modification changes for now.

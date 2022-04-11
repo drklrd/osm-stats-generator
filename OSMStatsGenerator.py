@@ -1,56 +1,40 @@
 import sys
+
 from osmdiff import OSMChange
-
-from config import variables_to_count
-from utils import is_feature_in_osm_tags
-
-# define class for stats generator
-class OSMStatsGenerator:
-    def __init__(self, user) -> None:
-        self.user = user
-        self.stats = {}
-
-    # function to print the stats
-    def show_stats(self):
-        for stat in self.stats:
-            print(
-                "{variable}: {value}".format(
-                    variable=stat, value=str(len(self.stats[stat]))
-                )
-            )
+from OSMStats import OSMStats
+from utils import update_stats_with_change
 
 
 def main(user):
-    o = OSMChange(file="data/changes.osc")
-    stats_collector = OSMStatsGenerator(user)
+    osm_changes = OSMChange(file="data/changes.osc")
+    stats_collector = OSMStats(user)
 
     # handle osm creation changes
-    for n in o.create:
+    for n in osm_changes.create:
         if n.tags and n.attribs["user"] == user:
-            for variable in variables_to_count:
-                if is_feature_in_osm_tags(
-                    features=variables_to_count[variable], osm_tags=n.tags
-                ):
-                    if not variable in stats_collector.stats:
-                        stats_collector.stats[variable] = []
-                    stats_collector.stats[variable].append(
-                        {
-                            "id": n.attribs["id"],
-                            "timestamp": n.attribs["timestamp"],
-                            "tags": n.tags,
-                        }
-                    )
+            updated_stats = update_stats_with_change(
+                change_type="created",
+                entity=n,
+                stats=stats_collector.get_current_stats(),
+            )
+            stats_collector.update_stats(updated_stats)
 
-    # print stats at the end
-    stats_collector.show_stats()
-
-    # handle osm modification changes. TO DO!
-    # for n in o.modify:
-    #     # add code to handle modification here
+    # handle osm modification changes.
+    for n in osm_changes.modify:
+        if n.tags and n.attribs["user"] == user:
+            updated_stats = update_stats_with_change(
+                change_type="modified",
+                entity=n,
+                stats=stats_collector.get_current_stats(),
+            )
+            stats_collector.update_stats(updated_stats)
 
     # handle osm deletion changes. TO DO!
     # for n in o.delete:
-    #     # add code to handle deletion here
+    # add code to handle deletion here
+
+    # print stats at the end
+    stats_collector.show_stats()
 
 
 if __name__ == "__main__":

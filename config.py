@@ -9,7 +9,7 @@ variables_to_count = {
         "amenity=hospital",
         "amenity=clinic",
         "amenity=pharmacy",
-        "amenity=healthpost",
+        "amenity=health_post",
     ),
     "others": (
         "amenity=toilets",
@@ -18,5 +18,8 @@ variables_to_count = {
         "office=charity",
         "office=lawyer",
         "office=ngo",
+        "amenity=police",
+        "highway=streetlamp",
+        "lit=yes",
     ),
 }
